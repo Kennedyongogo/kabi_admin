@@ -1,23 +1,37 @@
-const LOCALE = "en-KE";
+export const numberFmt = new Intl.NumberFormat("en-KE");
+export const dateFmt = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" });
+export const dateTimeFmt = new Intl.DateTimeFormat("en-GB", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
-export const formatDate = (value, options = { day: "numeric", month: "short", year: "numeric" }) => {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString(LOCALE, options);
+const relativeFmt = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+const TIME_UNITS = [
+  ["year", 31536000],
+  ["month", 2592000],
+  ["week", 604800],
+  ["day", 86400],
+  ["hour", 3600],
+  ["minute", 60],
+];
+
+export function timeAgo(value) {
+  if (!value) return "Never";
+  const seconds = (new Date(value).getTime() - Date.now()) / 1000;
+  for (const [unit, size] of TIME_UNITS) {
+    if (Math.abs(seconds) >= size) return relativeFmt.format(Math.round(seconds / size), unit);
+  }
+  return "Just now";
+}
+
+export const ROLE_LABELS = {
+  customer: "Customer",
+  rotejo_rider: "Rotejo rider",
+  shop_rider: "Shop rider",
+  shop_owner: "Shop owner",
+  staff: "Staff",
+  super_admin: "Super admin",
 };
-
-/** "12 - 14 Oct 2026", "30 Oct - 2 Nov 2026" or a single date. */
-export const formatDateRange = (start, end) => {
-  const a = new Date(start);
-  const b = new Date(end || start);
-  if (Number.isNaN(a.getTime())) return "";
-  if (Number.isNaN(b.getTime()) || a.toDateString() === b.toDateString()) return formatDate(a);
-  const sameMonth = a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
-  const first = sameMonth ? a.getDate() : formatDate(a, { day: "numeric", month: "short" });
-  return `${first} - ${formatDate(b)}`;
-};
-
-export const formatKES = (amount) =>
-  amount || amount === 0 ? `KES ${Number(amount).toLocaleString(LOCALE)}` : "";
-
-export const daysUntil = (value) =>
-  Math.ceil((new Date(value).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
