@@ -29,7 +29,8 @@ export default function Home() {
           Karibu, <em>{firstName}</em>.
         </h1>
         <p className="welcome__text">
-          Welcome to your Kabi admin dashboard. Use the menu above to manage your shop, users and settings.
+          Welcome to your Kabi admin dashboard. Use the menu above to manage your shop, orders
+          {user.role === "shop_owner" ? ", users" : ""} and settings.
         </p>
       </div>
     </section>

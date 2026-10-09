@@ -54,6 +54,62 @@
   height: 52px;
 }
 
+.nav__brand--shop {
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.nav__brand img.nav__brand-logo {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  object-fit: cover;
+  box-shadow: 0 6px 16px -10px rgba(28, 25, 22, 0.45);
+}
+
+.nav__brand img {
+  animation: brand-in 260ms ease both;
+}
+
+.nav__brand-name {
+  display: none;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--font-display, Georgia, serif);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The name only shows when the nav has room beside the centred links. */
+@media (min-width: 1360px) {
+  .nav__brand-name {
+    display: block;
+    max-width: 190px;
+  }
+}
+
+@keyframes brand-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav__brand img {
+    animation: none;
+  }
+}
+
 .nav__brand:focus-visible {
   outline: 2px solid var(--ember);
   outline-offset: 4px;

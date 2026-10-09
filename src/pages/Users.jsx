@@ -8,7 +8,7 @@ import { EditUserDialog, EyeIcon, PencilIcon, ViewUserDialog } from "./UserDialo
 import "./pages.css";
 import "./Users.css";
 
-const PAGE_SIZES = [10, 25, 50];
+export const PAGE_SIZES = [10, 25, 50];
 
 const ROLE_TABS = [
   {
@@ -398,7 +398,7 @@ function pageItems(page, totalPages) {
   return items;
 }
 
-function Pager({ pagination, onPage, onPageSize }) {
+export function Pager({ pagination, onPage, onPageSize }) {
   const { page, limit, total, totalPages } = pagination;
   const hasPrev = pagination.hasPrevPage ?? page > 1;
   const hasNext = pagination.hasNextPage ?? page < totalPages;
@@ -480,7 +480,7 @@ function Pager({ pagination, onPage, onPageSize }) {
   );
 }
 
-function SearchBox({ value, onSearch, placeholder }) {
+export function SearchBox({ value, onSearch, placeholder }) {
   const [text, setText] = useState(value);
 
   useEffect(() => {
@@ -518,7 +518,7 @@ function SearchBox({ value, onSearch, placeholder }) {
   );
 }
 
-function RoleTabs({ tabs, counts, activeId, onSelect }) {
+export function RoleTabs({ tabs, counts, activeId, onSelect, label = "User roles" }) {
   const trackRef = useRef(null);
   const tabRefs = useRef({});
   const [edges, setEdges] = useState({ overflow: false, prev: false, next: false });
@@ -606,7 +606,7 @@ function RoleTabs({ tabs, counts, activeId, onSelect }) {
         <ArrowIcon direction="left" />
       </button>
 
-      <div className="role-tabs__track" ref={trackRef} role="tablist" aria-label="User roles" onKeyDown={onKeyDown}>
+      <div className="role-tabs__track" ref={trackRef} role="tablist" aria-label={label} onKeyDown={onKeyDown}>
         {tabs.map((tab) => {
           const selected = tab.id === activeId;
           return (
@@ -626,7 +626,7 @@ function RoleTabs({ tabs, counts, activeId, onSelect }) {
             >
               {tab.icon}
               {tab.label}
-              {counts && <span className="role-tab__count">{numberFmt.format(counts[tab.id])}</span>}
+              {counts && counts[tab.id] !== undefined && <span className="role-tab__count">{numberFmt.format(counts[tab.id])}</span>}
             </button>
           );
         })}

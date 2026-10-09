@@ -85,7 +85,7 @@ export default function Login({ onLogin }) {
     try {
       const result = await api("/api/users/login", {
         method: "POST",
-        body: { email: form.email.trim(), password: form.password },
+        body: { email: form.email.trim(), password: form.password, portal: "admin" },
       });
       if (!ADMIN_ROLES.includes(result.user?.role)) {
         throw new Error("This account doesn't have access to the admin portal.");

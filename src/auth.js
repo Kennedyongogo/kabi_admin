@@ -3,6 +3,8 @@ const TOKEN_KEY = "kabi_admin_token";
 const USER_KEY = "kabi_admin_user";
 
 export const ADMIN_ROLES = ["shop_owner", "staff"];
+// Mirrors `USER_DIRECTORY_ROLES` in delivery_api's user routes.
+export const USER_DIRECTORY_ROLES = ["shop_owner"];
 
 export const ROLE_LABELS = {
   shop_owner: "Shop owner",
@@ -38,17 +40,19 @@ export class ApiError extends Error {
 }
 
 // `raw` returns the whole payload, for endpoints that put metadata such as `pagination` beside `data`.
+// A FormData `body` is sent as multipart so the browser can set the boundary itself.
 export async function api(path, { token, method = "GET", body, raw = false } = {}) {
+  const isForm = body instanceof FormData;
   let response;
   try {
     response = await fetch(`${API_BASE}${path}`, {
       method,
       headers: {
         Accept: "application/json",
-        ...(body ? { "Content-Type": "application/json" } : {}),
+        ...(body && !isForm ? { "Content-Type": "application/json" } : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
     });
   } catch {
     throw new ApiError("We couldn't reach the server. Check your connection and try again.", 0);
@@ -74,6 +78,6 @@ export const isAuthError = (error) => [400, 401, 403].includes(error?.status);
 
 export function mediaUrl(path) {
   if (!path) return "";
-  if (/^https?:\/\//.test(path) || path.startsWith("/")) return path;
+  if (/^(https?:\/\/|blob:|data:)/.test(path) || path.startsWith("/")) return path;
   return `${API_BASE}/${path}`;
 }

@@ -1,0 +1,306 @@
+.gallery {
+  display: grid;
+  gap: 14px;
+}
+
+.gallery__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gallery__head > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.gallery__head strong {
+  font-size: 14.5px;
+}
+
+.gallery__count {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.gallery__count.is-full {
+  border-color: rgba(226, 61, 18, 0.3);
+  background: var(--ember-wash);
+  color: var(--ember-deep);
+}
+
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 10px;
+  padding: 2px;
+  border-radius: 20px;
+  transition: background 160ms ease, box-shadow 160ms ease;
+}
+
+.gallery__grid.is-dropping {
+  background: var(--ember-wash);
+  box-shadow: 0 0 0 2px var(--ember);
+}
+
+.gallery__tile,
+.gallery__add {
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.gallery__tile {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  cursor: grab;
+  animation: gallery-in 220ms ease both;
+  transition: opacity 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.gallery__tile:hover {
+  box-shadow: 0 10px 22px -14px rgba(28, 25, 22, 0.55);
+}
+
+.gallery__tile.is-cover {
+  grid-column: span 2;
+  grid-row: span 2;
+  border-radius: 20px;
+}
+
+.gallery__tile.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.96);
+}
+
+.gallery__tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+}
+
+.gallery__badge,
+.gallery__new {
+  position: absolute;
+  top: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.gallery__badge {
+  left: 8px;
+  background: rgba(28, 25, 22, 0.78);
+  color: #fff;
+  backdrop-filter: blur(6px);
+}
+
+.gallery__tile.is-cover .gallery__badge {
+  background: linear-gradient(135deg, var(--ember), var(--ember-deep));
+}
+
+.gallery__badge--index {
+  min-width: 22px;
+  padding: 3px 7px;
+  text-align: center;
+}
+
+.gallery__new {
+  right: 8px;
+  background: #fff;
+  color: var(--ember-deep);
+  box-shadow: 0 2px 8px rgba(28, 25, 22, 0.18);
+}
+
+.gallery__tools {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 26px 6px 6px;
+  background: linear-gradient(to top, rgba(28, 25, 22, 0.72), rgba(28, 25, 22, 0));
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.gallery__tile:hover .gallery__tools,
+.gallery__tile:focus-within .gallery__tools {
+  opacity: 1;
+  transform: none;
+}
+
+.gallery__tools-spacer {
+  flex: 1;
+}
+
+.gallery__tool {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gallery__tool svg {
+  width: 15px;
+  height: 15px;
+}
+
+.gallery__tool:hover:not(:disabled) {
+  background: #fff;
+}
+
+.gallery__tool:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.gallery__tool:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 1px;
+}
+
+.gallery__tool--cover {
+  color: var(--ember-deep);
+}
+
+.gallery__tool--danger {
+  color: var(--danger);
+}
+
+.gallery__add {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px;
+  border: 1.5px dashed #d3c8b8;
+  background: var(--paper);
+  color: var(--muted);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.gallery__add:hover,
+.gallery__add:focus-visible {
+  border-color: var(--ember);
+  background: var(--ember-wash);
+  color: var(--ember-deep);
+  outline: 0;
+}
+
+.gallery__add > svg {
+  width: 26px;
+  height: 26px;
+}
+
+.gallery__add strong {
+  color: var(--ink);
+  font-size: 13.5px;
+}
+
+.gallery__add span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+
+.gallery__grid.is-empty .gallery__add {
+  grid-column: 1 / -1;
+  aspect-ratio: auto;
+  min-height: 170px;
+  border-radius: 20px;
+}
+
+@keyframes gallery-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+/* Touch screens have no hover, so the photo controls stay visible. */
+@media (hover: none) {
+  .gallery__tools {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .gallery__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Phones: the cover runs full width, the rest sit two per row with room for their controls. */
+@media (max-width: 640px) {
+  .gallery__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    gap: 8px;
+  }
+
+  .gallery__tile.is-cover {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    aspect-ratio: 4 / 3;
+  }
+
+  .gallery__tile:not(.is-cover) .gallery__tool--cover span {
+    display: none;
+  }
+
+  .gallery__tile:not(.is-cover) .gallery__tools {
+    gap: 3px;
+    padding: 22px 5px 5px;
+  }
+
+  .gallery__tile:not(.is-cover) .gallery__tool {
+    min-width: 28px;
+    height: 28px;
+    padding: 0 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery__tile,
+  .gallery__tools {
+    animation: none;
+    transition: none;
+  }
+}

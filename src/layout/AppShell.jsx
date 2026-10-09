@@ -1,18 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { ADMIN_ROLES, ROLE_LABELS, api, isAuthError } from "../auth.js";
+import { ADMIN_ROLES, ROLE_LABELS, USER_DIRECTORY_ROLES, api, isAuthError, mediaUrl } from "../auth.js";
 import Avatar from "../components/Avatar.jsx";
 import "./AppShell.css";
 
 const NAV_ITEMS = [
   { to: "/", label: "Home", icon: <HomeIcon />, end: true },
   { to: "/shop", label: "Shop", icon: <ShopIcon /> },
-  { to: "/users", label: "Users", icon: <UsersIcon /> },
+  { to: "/products", label: "Products", icon: <ProductsIcon /> },
+  { to: "/orders", label: "Orders", icon: <OrdersIcon /> },
+  { to: "/users", label: "Users", icon: <UsersIcon />, roles: USER_DIRECTORY_ROLES },
   { to: "/settings", label: "Settings", icon: <SettingsIcon /> },
 ];
 
 export default function AppShell({ session, onSignOut, onUserUpdate }) {
   const { token, user } = session;
+  const navItems = NAV_ITEMS.filter((item) => !item.roles || item.roles.includes(user.role));
 
   // Refresh the stored profile (and catch revoked or expired sessions) on every visit.
   useEffect(() => {
@@ -30,6 +33,29 @@ export default function AppShell({ session, onSignOut, onUserUpdate }) {
       cancelled = true;
     };
   }, [token, user.id, onSignOut, onUserUpdate]);
+
+  // The shop's logo brands the navbar. Pages that save or delete the shop report it through
+  // `onShopChange`; refetching on focus picks up changes made elsewhere (e.g. the owner, for staff).
+  const [shop, setShop] = useState(null);
+  const [brandPreview, setBrandPreview] = useState(undefined);
+  const refreshShop = useCallback(
+    () =>
+      api("/api/shops/mine", { token })
+        .then((fresh) => setShop(fresh ?? null))
+        .catch(() => {}),
+    [token]
+  );
+
+  useEffect(() => {
+    refreshShop();
+    const onVisible = () => document.visibilityState === "visible" && refreshShop();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
+    };
+  }, [refreshShop]);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
@@ -50,12 +76,10 @@ export default function AppShell({ session, onSignOut, onUserUpdate }) {
   return (
     <div className={`shell${menuOpen ? " is-menu-open" : ""}`}>
       <header className="nav">
-        <Link to="/" className="nav__brand" aria-label="Kabi admin home" onClick={closeMenu}>
-          <img src="/images/kabi-logo.png" alt="Kabi" />
-        </Link>
+        <Brand shop={brandPreview ?? shop} onClick={closeMenu} />
 
         <nav className="nav__links" aria-label="Main">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -91,7 +115,7 @@ export default function AppShell({ session, onSignOut, onUserUpdate }) {
           aria-label="Main"
           aria-hidden={!menuOpen}
         >
-          {NAV_ITEMS.map((item, index) => (
+          {navItems.map((item, index) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -112,9 +136,29 @@ export default function AppShell({ session, onSignOut, onUserUpdate }) {
       <div className="shell__scrim" onClick={closeMenu} aria-hidden="true" />
 
       <main className="shell__main">
-        <Outlet context={{ user, token, onUserUpdate }} />
+        <Outlet context={{ user, token, onUserUpdate, onShopChange: setShop, onBrandPreview: setBrandPreview }} />
       </main>
     </div>
+  );
+}
+
+function Brand({ shop, onClick }) {
+  const [brokenLogo, setBrokenLogo] = useState("");
+  const logo = shop?.logo_url && shop.logo_url !== brokenLogo ? shop.logo_url : "";
+
+  if (!logo) {
+    return (
+      <Link to="/" className="nav__brand" aria-label="Kabi admin home" onClick={onClick}>
+        <img key="kabi" className="nav__brand-kabi" src="/images/kabi-logo.png" alt="Kabi" />
+      </Link>
+    );
+  }
+
+  return (
+    <Link to="/" className="nav__brand nav__brand--shop" aria-label={`${shop.name} home`} title={shop.name} onClick={onClick}>
+      <img key={logo} className="nav__brand-logo" src={mediaUrl(logo)} alt={shop.name} onError={() => setBrokenLogo(logo)} />
+      <span className="nav__brand-name">{shop.name}</span>
+    </Link>
   );
 }
 
@@ -200,6 +244,24 @@ function ShopIcon() {
     <svg {...svgProps}>
       <path d="M4 9.5 5.5 4h13L20 9.5a2.5 2.5 0 0 1-5 0 2.5 2.5 0 0 1-5 0 2.5 2.5 0 0 1-5 0Z" />
       <path d="M5 12v8h14v-8M10 20v-5h4v5" />
+    </svg>
+  );
+}
+
+function ProductsIcon() {
+  return (
+    <svg {...svgProps}>
+      <path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5v-9Z" />
+      <path d="m3.5 7.5 8.5 4.5 8.5-4.5M12 12v9" />
+    </svg>
+  );
+}
+
+function OrdersIcon() {
+  return (
+    <svg {...svgProps}>
+      <path d="M6 3h12a1 1 0 0 1 1 1v17l-3-2-2 2-2-2-2 2-2-2-3 2V4a1 1 0 0 1 1-1Z" />
+      <path d="M9 8h6M9 12h6M9 16h3" />
     </svg>
   );
 }

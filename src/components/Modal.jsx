@@ -49,10 +49,10 @@ export default function Modal({ labelledBy, onClose, busy = false, initialFocusR
   );
 }
 
-export function Field({ id, label, error, hint, icon, trailing, labelAction, children }) {
+export function Field({ id, label, error, hint, icon, trailing, labelAction, className = "", children }) {
   const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
   return (
-    <div className={`field${error ? " has-error" : ""}`}>
+    <div className={`field${error ? " has-error" : ""}${className ? ` ${className}` : ""}`}>
       <span className="field__label-row">
         <label className="field__label" htmlFor={id}>
           {label}
