@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { api, mediaUrl } from "../auth.js";
 import ShopProfile from "../components/ShopProfile.jsx";
+import ShopReviews from "../components/ShopReviews.jsx";
 import { CameraIcon, ConfirmDialog, PlusIcon, StoreIcon, TrashIcon } from "../components/FormParts.jsx";
 import { ChevronIcon, productImages } from "../components/ProductGallery.jsx";
 import { numberFmt } from "../utils/format.js";
@@ -153,6 +154,8 @@ export default function Shop() {
               {isOwner ? "Manage products" : "View products"} <ArrowRightIcon />
             </span>
           </Link>
+
+          <ShopReviews endpoint="/api/shops/mine/reviews" token={token} shop={shopData} canReply={isOwner} />
         </>
       )}
 

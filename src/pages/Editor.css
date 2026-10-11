@@ -398,3 +398,33 @@
     display: none;
   }
 }
+
+.field--brand .field__icon,
+.field--brand .field__control:focus-within .field__icon {
+  color: var(--brand, var(--muted));
+}
+
+.field--brand.is-facebook {
+  --brand: #0866ff;
+}
+
+.field--brand.is-instagram {
+  --brand: #e4405f;
+}
+
+.field--brand.is-x,
+.field--brand.is-tiktok {
+  --brand: #000;
+}
+
+.field--brand.is-youtube {
+  --brand: #ff0000;
+}
+
+.field--brand.is-linkedin {
+  --brand: #0a66c2;
+}
+
+.field--brand.is-whatsapp {
+  --brand: #25d366;
+}

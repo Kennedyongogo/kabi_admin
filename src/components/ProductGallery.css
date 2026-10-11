@@ -40,7 +40,7 @@
 
 .gallery__grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   grid-auto-rows: 1fr;
   gap: 10px;
   padding: 2px;
@@ -64,6 +64,7 @@
 }
 
 .gallery__tile {
+  container-type: inline-size;
   border: 1px solid var(--line);
   background: var(--paper);
   cursor: grab;
@@ -261,13 +262,45 @@
   }
 }
 
-@media (max-width: 900px) {
-  .gallery__grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+/* Tool sizes follow each tile's own width so all four buttons always fit. */
+@container (max-width: 200px) {
+  .gallery__tool--cover span {
+    display: none;
+  }
+
+  .gallery__tools {
+    gap: 3px;
+    padding: 22px 5px 5px;
+  }
+
+  .gallery__tool {
+    min-width: 26px;
+    height: 26px;
+    padding: 0 4px;
+    border-radius: 8px;
+  }
+
+  .gallery__tool svg {
+    width: 14px;
+    height: 14px;
   }
 }
 
-/* Phones: the cover runs full width, the rest sit two per row with room for their controls. */
+@container (max-width: 134px) {
+  .gallery__tools {
+    gap: 2px;
+    padding: 20px 4px 4px;
+  }
+
+  .gallery__tool {
+    min-width: 24px;
+    height: 24px;
+    padding: 0 3px;
+    border-radius: 7px;
+  }
+}
+
+/* Phones: the cover runs full width, the rest sit two per row. */
 @media (max-width: 640px) {
   .gallery__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -279,21 +312,6 @@
     grid-column: 1 / -1;
     grid-row: auto;
     aspect-ratio: 4 / 3;
-  }
-
-  .gallery__tile:not(.is-cover) .gallery__tool--cover span {
-    display: none;
-  }
-
-  .gallery__tile:not(.is-cover) .gallery__tools {
-    gap: 3px;
-    padding: 22px 5px 5px;
-  }
-
-  .gallery__tile:not(.is-cover) .gallery__tool {
-    min-width: 28px;
-    height: 28px;
-    padding: 0 5px;
   }
 }
 

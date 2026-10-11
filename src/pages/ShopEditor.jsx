@@ -32,6 +32,7 @@ import {
   useUnsavedWarning,
 } from "../components/FormParts.jsx";
 import { CATEGORY_BY_ID, MARKER_ICONS, SHOP_CATEGORIES, SOCIAL_PLATFORMS, SocialIcon, parseCoords } from "../utils/shop.jsx";
+import DeliveryConditionsInput, { TruckIcon } from "../components/DeliveryConditionsInput.jsx";
 import "./pages.css";
 import "./Users.css";
 import "./Editor.css";
@@ -50,6 +51,7 @@ const shopToValues = (shop) => ({
   latitude: shop?.latitude != null ? String(Number(shop.latitude)) : "",
   longitude: shop?.longitude != null ? String(Number(shop.longitude)) : "",
   social_links: Object.fromEntries(SOCIAL_PLATFORMS.map((p) => [p.id, shop?.social_links?.[p.id] ?? ""])),
+  delivery_conditions: shop?.delivery_conditions ?? [],
 });
 
 function validateShop(values) {
@@ -84,6 +86,7 @@ const SECTIONS = [
   { id: "location", label: "Location", icon: <PinIcon /> },
   { id: "hours", label: "Opening hours", icon: <ClockIcon /> },
   { id: "social", label: "Social media", icon: <ShareIcon /> },
+  { id: "delivery", label: "Delivery conditions", icon: <TruckIcon /> },
 ];
 
 export default function ShopEditor() {
@@ -234,6 +237,7 @@ function ShopForm({ shop, token, onSaved, onPreview, onDone }) {
       "social_links",
       JSON.stringify(Object.fromEntries(Object.entries(values.social_links).map(([k, v]) => [k, v.trim()]).filter(([, v]) => v)))
     );
+    form.append("delivery_conditions", JSON.stringify(values.delivery_conditions.map((c) => c.trim()).filter(Boolean)));
     if (logo.file) form.append("shop_logo", logo.file);
     else if (logo.remove) form.append("remove_logo", "true");
 
@@ -260,6 +264,7 @@ function ShopForm({ shop, token, onSaved, onPreview, onDone }) {
     location: Boolean(values.address.trim() && position),
     hours: hours.length > 0 && !Object.keys(validateHours(hours)).length,
     social: Object.values(values.social_links).some((v) => v.trim()),
+    delivery: values.delivery_conditions.some((c) => c.trim()),
   };
   const doneCount = Object.values(complete).filter(Boolean).length;
   const errorSections = {
@@ -443,7 +448,13 @@ function ShopForm({ shop, token, onSaved, onPreview, onDone }) {
           <Section id="social" icon={<ShareIcon />} title="Social media" hint="Handles (@yourshop) or full profile links. All optional.">
             <div className="form-grid">
               {SOCIAL_PLATFORMS.map((platform) => (
-                <Field key={platform.id} id={`shop-social-${platform.id}`} label={platform.label} icon={<SocialIcon id={platform.id} />}>
+                <Field
+                  key={platform.id}
+                  id={`shop-social-${platform.id}`}
+                  label={platform.label}
+                  icon={<SocialIcon id={platform.id} />}
+                  className={`field--brand is-${platform.id}`}
+                >
                   <input
                     type="text"
                     spellCheck={false}
@@ -455,6 +466,18 @@ function ShopForm({ shop, token, onSaved, onPreview, onDone }) {
                 </Field>
               ))}
             </div>
+          </Section>
+
+          <Section
+            id="delivery"
+            icon={<TruckIcon />}
+            title="Delivery conditions"
+            hint="Fees, areas, times and anything customers should know before ordering a delivery. Shown on your public profile in this order."
+          >
+            <DeliveryConditionsInput
+              value={values.delivery_conditions}
+              onChange={(delivery_conditions) => update({ delivery_conditions })}
+            />
           </Section>
         </div>
 
