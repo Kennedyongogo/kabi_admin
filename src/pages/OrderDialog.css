@@ -1,0 +1,290 @@
+.modal--order {
+  width: min(780px, calc(100vw - 24px));
+}
+
+.od__head {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  padding-right: 44px;
+  margin-bottom: 18px;
+}
+
+.od__head .modal__subtitle {
+  margin: 0;
+}
+
+/* ---------- Progress ---------- */
+
+.od__flow {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0 0 18px;
+  padding: 0;
+  list-style: none;
+}
+
+.od__flow li {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.od__flow li span {
+  position: relative;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.od__flow li + li::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--line);
+}
+
+.od__flow li.is-done,
+.od__flow li.is-now {
+  color: var(--ink);
+}
+
+.od__flow li.is-done span {
+  border-color: var(--good);
+  background: var(--good);
+}
+
+.od__flow li.is-now span {
+  border-color: var(--ember);
+  background: var(--ember);
+  box-shadow: 0 0 0 4px var(--ember-wash);
+}
+
+.od__flow li.is-done::before,
+.od__flow li.is-now::before {
+  background: var(--good);
+}
+
+/* ---------- Cards ---------- */
+
+.od__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.od__card {
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+}
+
+.od__card h3 {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.od__card p {
+  margin: 0 0 4px;
+  font-size: 14.5px;
+  overflow-wrap: anywhere;
+}
+
+.od__items {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.od__items li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.od__thumb {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.od__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.od__item-name {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+}
+
+.od__item-name small {
+  color: var(--muted);
+}
+
+.od__money {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.od__total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  font-size: 16px;
+}
+
+.od__total strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.od__hint,
+.od__muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.od__hint {
+  margin: 6px 0 0 !important;
+}
+
+.od__who {
+  display: grid;
+}
+
+.od__who a,
+.od__map {
+  color: var(--ember-deep);
+  font-weight: 600;
+}
+
+.od__map {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13.5px;
+}
+
+.od__note {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.od__note small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.od__note--danger {
+  background: var(--danger-wash);
+}
+
+.od__rider {
+  margin-top: 12px;
+}
+
+.od__assign {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.od__assign select {
+  flex: 1 1 220px;
+  min-width: 0;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.od__cancel {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.od__cancel textarea {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 400;
+  resize: vertical;
+}
+
+.od__cancel .modal__actions {
+  margin-top: 6px;
+}
+
+.od .modal__btn--danger {
+  flex: 1;
+  max-width: 240px;
+  background: linear-gradient(180deg, #e0364c, var(--danger));
+  color: #fff;
+}
+
+.od__actions {
+  justify-content: space-between;
+}
+
+.od__decline {
+  color: var(--danger);
+}
+
+@media (max-width: 640px) {
+  .od__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .od__flow li {
+    font-size: 0;
+  }
+
+  .od__flow li.is-now {
+    font-size: 11px;
+  }
+
+  .od__actions .modal__btn--primary {
+    max-width: none;
+  }
+}

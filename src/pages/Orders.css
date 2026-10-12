@@ -21,6 +21,38 @@
   font-size: 12.5px;
 }
 
+.otable__row {
+  cursor: pointer;
+}
+
+.otable__row:hover td {
+  background: rgba(252, 228, 218, 0.35);
+}
+
+.otable__row:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: -2px;
+}
+
+.otable__row.is-new .otable__order strong::after {
+  content: "New";
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--ember);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+
+.otable__items {
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .otable__total {
   color: var(--ink);
   font-weight: 600;

@@ -11,7 +11,6 @@ import {
   PlusIcon,
   ScaleIcon,
   Section,
-  StackIcon,
   Switch,
   TagIcon,
   UndoIcon,
@@ -32,7 +31,6 @@ const productToValues = (product, shop) => ({
   category: product?.category ?? shop.categories[0] ?? "",
   price: product?.price != null ? String(Number(product.price)) : "",
   unit: product?.unit ?? "",
-  stock_quantity: product?.stock_quantity != null ? String(product.stock_quantity) : "",
   description: product?.description ?? "",
   is_available: product?.is_available ?? true,
 });
@@ -44,8 +42,6 @@ function validateProduct(values) {
   const price = values.price.trim();
   if (!price) errors.price = "Enter a price.";
   else if (!Number.isFinite(Number(price)) || Number(price) < 0) errors.price = "Enter a valid amount.";
-  const stock = values.stock_quantity.trim();
-  if (stock && !/^\d+$/.test(stock)) errors.stock_quantity = "Use a whole number, or leave it blank.";
   return errors;
 }
 
@@ -125,7 +121,7 @@ function ProductForm({ shop, product, token, onDone }) {
     if (Object.keys(found).length) return focusFirstError(formRef.current);
 
     const form = new FormData();
-    for (const key of ["name", "category", "price", "unit", "stock_quantity", "description"]) form.append(key, values[key].trim());
+    for (const key of ["name", "category", "price", "unit", "description"]) form.append(key, values[key].trim());
     form.append("is_available", String(values.is_available));
     const { order, files } = itemsToUpload(photos);
     form.append("images", JSON.stringify(order));
@@ -149,7 +145,6 @@ function ProductForm({ shop, product, token, onDone }) {
 
   const leave = () => (dirty ? setConfirmLeave(true) : onDone());
   const category = CATEGORY_BY_ID[values.category];
-  const stock = values.stock_quantity.trim();
   const preview = {
     id: "preview",
     name: values.name.trim() || "Product name",
@@ -157,7 +152,6 @@ function ProductForm({ shop, product, token, onDone }) {
     price: Number(values.price) || 0,
     unit: values.unit.trim(),
     description: values.description.trim(),
-    stock_quantity: /^\d+$/.test(stock) ? Number(stock) : null,
     is_available: values.is_available,
     images: photos.map(itemSrc),
   };
@@ -229,10 +223,7 @@ function ProductForm({ shop, product, token, onDone }) {
               <Field id="product-unit" label="Sold per" icon={<ScaleIcon />} hint="Optional">
                 <input type="text" maxLength={40} placeholder={category?.unitHint ?? "e.g. 1 piece"} {...bind("unit")} />
               </Field>
-              <Field id="product-stock" label="In stock" error={errors.stock_quantity} icon={<StackIcon />} hint="Leave blank if you don't track stock">
-                <input type="text" inputMode="numeric" placeholder="e.g. 24" {...bind("stock_quantity")} />
-              </Field>
-              <div className="form-grid__switch">
+              <div className="form-grid__switch form-grid__full">
                 <Switch
                   id="product-available"
                   checked={values.is_available}

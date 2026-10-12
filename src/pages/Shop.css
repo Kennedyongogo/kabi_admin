@@ -562,16 +562,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.pcard__stock {
-  color: var(--good);
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-.pcard__stock.is-empty {
-  color: var(--danger);
-}
-
 .pcard__actions {
   display: flex;
   align-items: center;

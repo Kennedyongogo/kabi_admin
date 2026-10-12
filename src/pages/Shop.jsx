@@ -188,9 +188,6 @@ export default function Shop() {
 export function ProductCard({ product, index, canEdit, busy, onEdit, onDelete, onToggle }) {
   const category = CATEGORY_BY_ID[product.category];
   const images = productImages(product);
-  const stock = product.stock_quantity;
-  const stockLabel =
-    stock === null || stock === undefined ? null : stock === 0 ? "Out of stock" : `${numberFmt.format(stock)} in stock`;
 
   return (
     <article className={`pcard pcard--${product.category}${product.is_available ? "" : " is-off"}`} style={{ "--i": index }}>
@@ -215,7 +212,6 @@ export function ProductCard({ product, index, canEdit, busy, onEdit, onDelete, o
         {product.description && <p className="pcard__desc">{product.description}</p>}
         <div className="pcard__foot">
           <strong className="pcard__price">{moneyFmt.format(Number(product.price) || 0)}</strong>
-          {stockLabel && <span className={`pcard__stock${stock === 0 ? " is-empty" : ""}`}>{stockLabel}</span>}
         </div>
       </div>
 

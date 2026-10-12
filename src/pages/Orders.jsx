@@ -3,6 +3,7 @@ import { useOutletContext, useSearchParams } from "react-router-dom";
 import { api } from "../auth.js";
 import { dateTimeFmt, numberFmt, timeAgo } from "../utils/format.js";
 import { PAGE_SIZES, Pager, RoleTabs } from "./Users.jsx";
+import OrderDialog, { STATUS_LABELS } from "./OrderDialog.jsx";
 import "./pages.css";
 import "./Users.css";
 import "./Orders.css";
@@ -10,21 +11,14 @@ import "./Orders.css";
 // `id` matches the order `status` enum in delivery_api; "all" sends no filter.
 const STATUS_TABS = [
   { id: "all", label: "All" },
-  { id: "pending", label: "Pending" },
-  { id: "confirmed", label: "Confirmed" },
-  { id: "preparing", label: "Preparing" },
-  { id: "ready_for_pickup", label: "Ready for pickup" },
-  { id: "picked_up", label: "On the way" },
-  { id: "delivered", label: "Delivered" },
-  { id: "cancelled", label: "Cancelled" },
+  ...["pending", "confirmed", "preparing", "ready_for_pickup", "picked_up", "delivered", "cancelled"].map((id) => ({ id, label: STATUS_LABELS[id] })),
 ];
-
-const STATUS_LABELS = Object.fromEntries(STATUS_TABS.map((tab) => [tab.id, tab.label]));
 
 const moneyFmt = new Intl.NumberFormat("en-KE", { style: "currency", currency: "KES", maximumFractionDigits: 0 });
 
 export default function Orders() {
-  const { token } = useOutletContext();
+  const { user: me, token } = useOutletContext();
+  const [openOrder, setOpenOrder] = useState(null);
   const [params, setParams] = useSearchParams();
   const directoryRef = useRef(null);
 
@@ -155,7 +149,7 @@ export default function Orders() {
             <p className="directory__state-hint">Orders placed by customers will appear here.</p>
           </div>
         ) : (
-          <OrderTable rows={list.rows} startIndex={startIndex} />
+          <OrderTable rows={list.rows} startIndex={startIndex} onOpen={setOpenOrder} />
         )}
 
         {list.pagination && list.pagination.total > 0 && list.status !== "error" && (
@@ -166,11 +160,28 @@ export default function Orders() {
           />
         )}
       </div>
+
+      {openOrder && (
+        <OrderDialog
+          order={openOrder}
+          token={token}
+          me={me}
+          onClose={() => setOpenOrder(null)}
+          onChanged={(fresh) =>
+            setList((prev) => ({ ...prev, rows: prev.rows.map((row) => (row.id === fresh.id ? { ...row, ...fresh } : row)) }))
+          }
+        />
+      )}
     </section>
   );
 }
 
-function OrderTable({ rows, startIndex = 0 }) {
+const itemSummary = (items = []) =>
+  items
+    .map((item) => `${item.quantity} × ${item.name ?? item.menu_item?.name ?? "Item"}`)
+    .join(", ");
+
+function OrderTable({ rows, startIndex = 0, onOpen }) {
   const items = rows ?? Array.from({ length: 4 }, (_, index) => ({ id: `skeleton-${index}` }));
 
   return (
@@ -189,7 +200,15 @@ function OrderTable({ rows, startIndex = 0 }) {
       <tbody>
         {items.map((order, index) =>
           rows ? (
-            <tr key={order.id} style={{ "--i": index }}>
+            <tr
+              key={order.id}
+              style={{ "--i": index }}
+              className={`otable__row${order.status === "pending" ? " is-new" : ""}`}
+              tabIndex={0}
+              onClick={() => onOpen(order)}
+              onKeyDown={(event) => (event.key === "Enter" || event.key === " ") && (event.preventDefault(), onOpen(order))}
+              aria-label={`Open order ${order.order_number}`}
+            >
               <td className="utable__no">
                 <span className="utable__num">{startIndex + index + 1}</span>
               </td>
@@ -204,7 +223,10 @@ function OrderTable({ rows, startIndex = 0 }) {
                 {order.customer?.phone && <span className="muted otable__sub">{order.customer.phone}</span>}
               </td>
               <td data-label="Rider">{order.rider?.full_name ?? <span className="muted">Unassigned</span>}</td>
-              <td data-label="Items">{numberFmt.format(order.items?.reduce((sum, item) => sum + (item.quantity ?? 1), 0) ?? 0)}</td>
+              <td data-label="Items">
+                {numberFmt.format(order.items?.reduce((sum, item) => sum + (item.quantity ?? 1), 0) ?? 0)}
+                <span className="muted otable__sub otable__items">{itemSummary(order.items)}</span>
+              </td>
               <td data-label="Total" className="otable__total">
                 {moneyFmt.format(Number(order.total) || 0)}
               </td>
